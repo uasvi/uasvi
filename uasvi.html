@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="sr" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UA SVIIII</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f; --ink2: #3a3a3a; --muted: #9a9a9a; --line: #e8e8e8; --line2: #f0f0f0;
+    --bg: #fafaf8; --surface: #ffffff; --topbar-bg: rgba(250, 250, 248, 0.88);
+    --green: #16a34a; --green-bg: #f0fdf4; --green-border: #bbf7d0; --green-pulse: rgba(22, 163, 74, 0.12);
+    --accent: #2563eb; --accent-bg: #eff6ff; --accent-ring: rgba(37, 99, 235, 0.08);
+    --mono: 'Geist Mono', monospace; --serif: 'Instrument Serif', serif; --sans: 'Geist', sans-serif;
+  }
+  [data-theme="dark"] {
+    --ink: #ededed; --ink2: #a1a1aa; --muted: #71717a; --line: #27272a; --line2: #18181b;
+    --bg: #09090b; --surface: #121214; --topbar-bg: rgba(9, 9, 11, 0.88);
+    --green: #4ade80; --green-bg: rgba(74, 222, 128, 0.1); --green-border: rgba(74, 222, 128, 0.2);
+    --accent: #60a5fa; --accent-bg: rgba(96, 165, 250, 0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); font-family: var(--sans); color: var(--ink); min-height: 100vh; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 100; background: var(--topbar-bg);
+    backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
+    padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 56px;
+  }
+  .logo { font-family: var(--serif); font-size: 22px; font-style: italic; color: var(--ink); }
+  .logo span { color: var(--muted); font-family: var(--mono); font-size: 11px; margin-left: 6px; font-style: normal; }
+
+  .layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 56px); }
+  .sidebar { border-right: 1px solid var(--line); padding: 32px 24px; position: sticky; top: 56px; height: calc(100vh - 56px); display: flex; flex-direction: column; gap: 24px; }
+  .sidebar-label { font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding-bottom: 6px; border-bottom: 1px solid var(--line2); margin-bottom: 8px; }
+
+  .search { width: 100%; padding: 8px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; font-family: var(--sans); font-size: 13px; color: var(--ink); outline: none; margin-bottom: 4px; }
+  
+  /* Filter Buttons */
+  .filter-group { display: flex; flex-direction: column; gap: 4px; }
+  .fbtn {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; border-radius: 8px; border: 1px solid transparent;
+    background: transparent; font-family: var(--sans); font-size: 13px; font-weight: 500;
+    color: var(--ink2); cursor: pointer; text-align: left; transition: 0.2s;
+  }
+  .fbtn:hover { background: var(--line2); }
+  .fbtn.active { background: var(--accent-bg); color: var(--accent); border-color: var(--accent-bg); }
+  .fbtn-count { font-family: var(--mono); font-size: 10px; opacity: 0.7; }
+
+  .stat-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+  .stat-val { font-family: var(--serif); font-size: 24px; color: var(--ink); }
+  .stat-label { font-family: var(--mono); font-size: 9px; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+
+  .main { padding: 28px 32px; }
+  .table-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .table-head { display: grid; grid-template-columns: 60px 1fr 120px 160px; padding: 10px 20px; border-bottom: 1px solid var(--line); background: var(--bg); }
+  .th { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+  .th.right { text-align: right; }
+
+  .row { display: grid; grid-template-columns: 60px 1fr 120px 160px; padding: 12px 20px; border-bottom: 1px solid var(--line2); align-items: center; }
+  .row:hover { background: var(--bg); }
+  .row-id { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .row-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .badge-online { color: var(--green); font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; }
+  .row-time { text-align: right; font-size: 13px; color: var(--ink2); }
+  .time-full { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; border-right: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">UAAA<span>SVIIIII</span></div>
+  <div id="updated-tag" style="font-size: 10px; font-family: var(--mono); color: var(--muted);">Osvežavanje...</div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div>
+      <div class="sidebar-label">Pretraga</div>
+      <input type="text" id="search" class="search" placeholder="Ime ili ID..." />
+    </div>
+
+    <div>
+      <div class="sidebar-label">Prikaz</div>
+      <div class="filter-group">
+        <button class="fbtn active" onclick="setFilter('online')" id="btn-online">
+          Na mreži <span class="fbtn-count" id="count-online">0</span>
+        </button>
+        <button class="fbtn" onclick="setFilter('history')" id="btn-history">
+          Poslednji put viđeni <span class="fbtn-count" id="count-history">0</span>
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sidebar-label">Statistika</div>
+      <div class="stat-card">
+        <div class="stat-val" id="stat-today">0</div>
+        <div class="stat-label">Viđeno danas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="stat-total">0</div>
+        <div class="stat-label">Ukupno u bazi</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="table-wrap">
+      <div class="table-head">
+        <div class="th">ID</div>
+        <div class="th">Ime</div>
+        <div class="th">Status</div>
+        <div class="th right">Vreme</div>
+      </div>
+      <div id="table-body"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+const WORKER = "https://ancient-violet-3dbc.dizzzkliper.workers.dev/";
+let allData = [];
+let currentFilter = 'online'; 
+
+async function load() {
+  try {
+    const [l, h] = await Promise.all([fetch(WORKER), fetch(WORKER + "history")]);
+    const live = await l.json();
+    const hist = await h.json();
+    const now = Date.now();
+    const today = new Date().setHours(0,0,0,0);
+
+    const livePlayers = (live.players || []).map(p => ({...p, online: true}));
+    const histPlayers = (hist.players || []).map(p => ({...p, online: false}));
+
+    const merged = {};
+    livePlayers.forEach(p => merged[p.name] = p);
+    histPlayers.forEach(p => { if(!merged[p.name]) merged[p.name] = p; });
+
+    allData = Object.values(merged);
+    
+    // Stats
+    document.getElementById("count-online").textContent = livePlayers.length;
+    document.getElementById("count-history").textContent = allData.length;
+    document.getElementById("stat-today").textContent = allData.filter(p => p.lastSeen > today).length;
+    document.getElementById("stat-total").textContent = allData.length;
+    document.getElementById("updated-tag").textContent = `Ažurirano: ${new Date().toLocaleTimeString('sr-RS')}`;
+    
+    render();
+  } catch(e) { console.error(e); }
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  document.getElementById('btn-online').classList.toggle('active', f === 'online');
+  document.getElementById('btn-history').classList.toggle('active', f === 'history');
+  render();
+}
+
+function timeAgo(ts) {
+  if (!ts) return "—";
+  const m = Math.floor((Date.now() - ts) / 60000);
+  if (m < 1) return "Sada";
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ${m%60}m`;
+  return `${Math.floor(h/24)}d`;
+}
+
+function render() {
+  const q = document.getElementById("search").value.toLowerCase();
+  const body = document.getElementById("table-body");
+  
+  let list = allData.filter(p => p.name.toLowerCase().includes(q) || String(p.id || "").includes(q));
+
+  if (currentFilter === 'online') {
+    list = list.filter(p => p.online).sort((a,b) => (parseInt(a.id)||0) - (parseInt(b.id)||0));
+  } else {
+    list = list.sort((a,b) => (b.lastSeen || 0) - (a.lastSeen || 0));
+  }
+
+  body.innerHTML = list.map(p => `
+    <div class="row">
+      <div class="row-id">${p.id || "—"}</div>
+      <div class="row-name">${p.name}</div>
+      <div class="row-status">${p.online ? '<span class="badge-online">● Online</span>' : '<span style="color:var(--muted)">Offline</span>'}</div>
+      <div class="row-time">
+        ${p.online ? '<span style="color:var(--green)">U igri</span>' : `<span>${timeAgo(p.lastSeen)}</span>`}
+      </div>
+    </div>
+  `).join("");
+}
+
+document.getElementById("search").oninput = render;
+load();
+setInterval(load, 30000);
+</script>
+</body>
+</html>
